@@ -3,8 +3,9 @@ import { Provider } from 'react-redux'
 import store from './ducks/store'
 
 import './App.css';
+import styles from "./App.module.sass"
 
-import VideoPlayer from './components/VideoPlayer/VideoPlayer'
+import YouTubePlayer from './components/YouTubePlayer/YouTubePlayer'
 import SessionController from './components/SessionController/SessionController'
 import Chat from './components/Chat/Chat'
 
@@ -12,8 +13,8 @@ function App() {
     return (
         <Provider store={store}>
             <div className='App'>
-                <div>
-                    <VideoPlayer />
+                <div className={styles.room}>
+                    <YouTubePlayer />
                     <SessionController />
                 </div>
                 <Chat />
