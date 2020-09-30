@@ -14,7 +14,7 @@ export default function () {
     return(
         <div style={{color: 'white'}}>
             <div>
-                Token: <input type="text" value={token} onChange={updateLink} />
+                Token: <input type="text" value={token} />
             </div>
             <div>
                 Link: <input type="text" value={link} onChange={updateLink}/>
