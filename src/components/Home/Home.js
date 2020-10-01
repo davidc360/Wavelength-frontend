@@ -1,18 +1,33 @@
 import React, { useEffect, useState, useRef } from 'react'
 import styles from "./Home.module.sass"
 
+import axios from 'axios'
+
+const CREATE_ENDPOINT = 'http://50.116.0.53/create'
+
 export default function () {
     const codeRef = useRef()
     function join() {
-        const code = codeRef.current.value
-        window.open("/" + code,"_self") 
+        const token = codeRef.current.value
+        window.open("/" + token, "_self") 
+    }
+    
+    function createToken() {
+        const config = {
+            headers: {'Access-Control-Allow-Origin': '*'}
+        }
+        axios.get(CREATE_ENDPOINT, config).then(resp => {
+            const token = resp.data
+            console.log(resp.data);
+            window.open("/" + token, "_self") 
+        })
     }
     
     return(
         <div className={styles.ctn}>
-            <button className={styles.create}>Create Room</button>
+            <button className={styles.create} onClick={createToken}>Create Room</button>
             <div className={styles.join}>
-                <input type="text" className={styles.code} ref={codeRef}/>
+                <input type="text" className={styles.code} ref={codeRef} />
                 <button className={styles.joinButton} onClick={join}>Join</button>
             </div>
         </div>
