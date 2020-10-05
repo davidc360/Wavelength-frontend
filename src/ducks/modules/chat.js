@@ -2,7 +2,7 @@ import produce from 'immer'
 
 export const SEND_MESSAGE = 'SEND_MESSAGE'
 export const SET_NAME = 'SET_NAME'
-export const SET_PICTURE_URL = 'SET_PICTURE_URL'
+export const SET_PHOTO_URL = 'SET_PHOTO_URL'
 export const SET_SHOW_MODAL = 'SET_SHOW_MODAL' 
 
 const localUsername = localStorage.getItem('username') ?? 'Anonymous'
@@ -21,10 +21,16 @@ const initialState = {
 const reducer = produce((draft, action = {}) => { 
     switch (action.type) {
         case SET_NAME:
-            const { name } = action
-            draft.userInfo.username = name
-            localStorage.setItem('username', name)
+            const { username } = action
+            draft.userInfo.username = username
+            localStorage.setItem('username', username)
             return
+
+        case SET_PHOTO_URL:
+            const { photo_url } = action
+            draft.userInfo.photo_url = photo_url
+            localStorage.setItem('photo_url', photo_url)
+            return 
 
         case SET_SHOW_MODAL:
             draft.showSettingsModal = action.show
@@ -46,8 +52,8 @@ export const setName = name => ({
 })
 
 export const setPicture = url => ({
-    type: SET_PICTURE_URL,
-    url: url
+    type: SET_PHOTO_URL,
+    photo_url: url
 })
 
 export const setShowModal = show => ({

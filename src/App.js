@@ -15,7 +15,7 @@ import Chat from './components/Chat/Chat'
 import SockJs from 'sockjs-client'
 import socketIOClient from "socket.io-client"
 
-import { setToken } from './ducks/modules/session'
+import { setToken, setSocket } from './ducks/modules/session'
 import { sendMessage } from './ducks/modules/chat'
 
 
@@ -37,26 +37,31 @@ function App() {
 }
 
 function Room() {
-    const socket = useRef()
     const dispatch = useDispatch()
     const userInfo = useSelector(state => state.chat.userInfo)
-    const sessionInfo = useSelector(state => state.session)
+    const { token } = useSelector(state => state.session)
 
-    useEffect(() => { 
-        socket.current = socketIOClient.connect(ENDPOINT)
-      
-        socket.current.on('connect', () => {
+    const tokenFromURL = useLocation().pathname.slice(1)
+
+    useEffect(() => {
+        dispatch(setToken(tokenFromURL))
+    }, [])
+
+    useEffect(() => {
+        const socket = socketIOClient.connect(ENDPOINT)
+
+        socket.on('connect', () => {
             console.log('connection open')
-            socket.current.emit('subscribe', { room: userInfo.token })
-
-            socket.current.emit('join_room', {
+            socket.emit('subscribe', { room: userInfo.token })
+    
+            socket.emit('join_room', {
                 photo_url: userInfo.photo_url,
                 username: userInfo.username,
-                room: sessionInfo.token
+                room: token
             })
         })
         
-        socket.current.on('connection_message', e => {
+        socket.on('connection_message', e => {
             console.log(e)
             dispatch(sendMessage({
                 username: e.username,
@@ -64,14 +69,8 @@ function Room() {
                 photo_url: e.photo_url
             }))
         })
-        
-    }, [])
 
-    
-    const token = useLocation().pathname.slice(1)
-
-    useEffect(() => {
-        dispatch(setToken(token))
+        dispatch(setSocket(socket))
     }, [])
 
     return (

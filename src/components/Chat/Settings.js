@@ -28,8 +28,8 @@ export default function () {
             />
             {showSettingsModal && (
                 <div>
-                    <div>name: <input type="text" value={userInfo.name} onChange={updateName}/></div>
-                    <div>Picture URL: <input type="text" value={userInfo.picture} onChange={updatePicture}/></div>
+                    <div>name: <input type="text" value={userInfo.username} onChange={updateName}/></div>
+                    <div>Picture URL: <input type="text" value={userInfo.photo_url} onChange={updatePicture}/></div>
                 </div >
             )}
         </div>
