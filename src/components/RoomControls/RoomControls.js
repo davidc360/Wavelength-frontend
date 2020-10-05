@@ -4,10 +4,15 @@ import { setLink } from '../../ducks/modules/session'
 
 export default function () {
     const dispatch = useDispatch()
-    const { token, link } = useSelector(state => state.session)
+    const { token, link, socket } = useSelector(state => state.session)
 
     function updateLink(e) {
-        dispatch(setLink(e.target.value))
+        const newLink = e.target.value
+        dispatch(setLink(newLink))
+        socket.emit('update_link', {
+            room: token,
+            link: newLink
+        })
     }
 
 

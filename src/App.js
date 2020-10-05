@@ -15,7 +15,7 @@ import Chat from './components/Chat/Chat'
 import SockJs from 'sockjs-client'
 import socketIOClient from "socket.io-client"
 
-import { setToken, setSocket } from './ducks/modules/session'
+import { setToken, setSocket, setLink } from './ducks/modules/session'
 import { sendMessage } from './ducks/modules/chat'
 
 
@@ -44,20 +44,17 @@ function Room() {
     const tokenFromURL = useLocation().pathname.slice(1)
 
     useEffect(() => {
-        dispatch(setToken(tokenFromURL))
-    }, [])
-
-    useEffect(() => {
         const socket = socketIOClient.connect(ENDPOINT)
+        const tokenToSend = token ?? tokenFromURL
 
         socket.on('connect', () => {
             console.log('connection open')
     
-            console.log('sending', token)
+            console.log('sending', tokenToSend)
             socket.emit('join_room', {
                 photo_url: userInfo.photo_url,
                 username: userInfo.username,
-                room: token
+                room: tokenToSend
             })
         })
         
@@ -74,7 +71,12 @@ function Room() {
             dispatch(sendMessage(message)) 
         })
 
+        socket.on('update_link', e => {
+            dispatch(setLink(e.link))
+        })
+
         dispatch(setSocket(socket))
+        dispatch(setToken(tokenFromURL))
     }, [])
 
     return (

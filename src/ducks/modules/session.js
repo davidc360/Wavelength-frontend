@@ -5,7 +5,7 @@ export const SET_TOKEN = 'SET_TOKEN'
 export const SET_SOCKET = 'SET_SOCKET'
 
 const initialState = {
-    token: '1232D',
+    // token: '1232D',
     link: 'https://www.youtube.com/watch?v=9EYZnSXEla0'
 }
 
