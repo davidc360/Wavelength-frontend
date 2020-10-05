@@ -11,8 +11,8 @@ export default function () {
     return(
         <div className={styles.ctn}>
             <Settings />
-            {messages.map((message) => (
-                <Message {...message} />
+            {messages.map((message, i) => (
+                <Message {...message} key={i}/>
             )) }
             <Input />
         </div>
