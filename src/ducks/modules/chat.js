@@ -5,27 +5,15 @@ export const SET_NAME = 'SET_NAME'
 export const SET_PICTURE_URL = 'SET_PICTURE_URL'
 export const SET_SHOW_MODAL = 'SET_SHOW_MODAL' 
 
+const localUsername = localStorage.getItem('username') ?? 'Anonymous'
+const localPhotoURL = localStorage.getItem('photo_url') ?? 'https://i.imgur.com/mCHMpLT.png'
+
 const initialState = {
     messages: [
-        {
-            name: 'David',
-            picture: 'https://i.imgur.com/Jvh1OQm.jpg',
-            message: 'this movies sucks🤬'
-        },
-        {
-            name: 'Joe',
-            picture: 'https://i.imgur.com/XgbZdeA.jpeg',
-            message: 'YEah who picked it🤬'
-        },
-        {
-            name: 'Jess',
-            picture: 'https://i.imgur.com/AD3MbBi.jpeg',
-            message: 'Not me!!!!'
-        },
     ],
     userInfo: {
-        name: 'David',
-        picture: 'https://i.imgur.com/Jvh1OQm.jpg',
+        username: localUsername,
+        photo_url: localPhotoURL,
     },
     showSettingsModal: false
 }
@@ -33,7 +21,9 @@ const initialState = {
 const reducer = produce((draft, action = {}) => { 
     switch (action.type) {
         case SET_NAME:
-            draft.userInfo.name = action.name
+            const { name } = action
+            draft.userInfo.username = name
+            localStorage.setItem('username', name)
             return
 
         case SET_SHOW_MODAL:
@@ -42,8 +32,8 @@ const reducer = produce((draft, action = {}) => {
         
         case SEND_MESSAGE:
             draft.messages.push({
-                name: action.name,
-                picture: action.picture,
+                username: action.username,
+                photo_url: action.photo_url,
                 message: action.message,
             })
             return
@@ -52,7 +42,7 @@ const reducer = produce((draft, action = {}) => {
 
 export const setName = name => ({
     type: SET_NAME,
-    name: name
+    username: name
 })
 
 export const setPicture = url => ({
@@ -65,11 +55,11 @@ export const setShowModal = show => ({
     show: show 
 })
 
-export const sendMessage = (payload) => ({
+export const sendMessage = ({ message, username, photo_url }) => ({
     type: SEND_MESSAGE,
-    message: payload.message,
-    name: payload.name,
-    picture: payload.picture
+    message: message,
+    username: username,
+    photo_url: photo_url
 })
 
 export default reducer

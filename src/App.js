@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Provider, useDispatch } from 'react-redux'
+import { Provider, useSelector, useDispatch } from 'react-redux'
 import store from './ducks/store'
 
 import { BrowserRouter, Route, Switch, useLocation} from 'react-router-dom'
@@ -12,26 +12,18 @@ import YouTubePlayer from './components/YouTubePlayer/YouTubePlayer'
 import SessionController from './components/RoomControls/RoomControls'
 import Chat from './components/Chat/Chat'
 
-import { setToken } from './ducks/modules/session'
-
 import SockJs from 'sockjs-client'
 import socketIOClient from "socket.io-client"
 
+import { setToken } from './ducks/modules/session'
+import { sendMessage } from './ducks/modules/chat'
+
+
 // const ENDPOINT = 'http://50.116.0.53/'
-const ENDPOINT = 'http://127.0.0.1:5000/'
+const ENDPOINT = 'http://127.0.0.1:2000/'
 
 function App() {
-    const [response, setResponse] = useState("")
-
-    useEffect(() => { 
-        const socket = socketIOClient.connect(ENDPOINT)
-        socket.on('connect', () => {
-            console.log('connection open')
-        })
-    }, [])
-
     
-
     return (
         <Provider store={store}>
             <BrowserRouter>
@@ -45,7 +37,37 @@ function App() {
 }
 
 function Room() {
+    const socket = useRef()
     const dispatch = useDispatch()
+    const userInfo = useSelector(state => state.chat.userInfo)
+    const sessionInfo = useSelector(state => state.session)
+
+    useEffect(() => { 
+        socket.current = socketIOClient.connect(ENDPOINT)
+      
+        socket.current.on('connect', () => {
+            console.log('connection open')
+            socket.current.emit('subscribe', { room: userInfo.token })
+
+            socket.current.emit('join_room', {
+                photo_url: userInfo.photo_url,
+                username: userInfo.username,
+                room: sessionInfo.token
+            })
+        })
+        
+        socket.current.on('connection_message', e => {
+            console.log(e)
+            dispatch(sendMessage({
+                username: e.username,
+                message: 'joined',
+                photo_url: e.photo_url
+            }))
+        })
+        
+    }, [])
+
+    
     const token = useLocation().pathname.slice(1)
 
     useEffect(() => {
