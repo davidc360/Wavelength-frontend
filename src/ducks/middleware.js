@@ -1,5 +1,4 @@
-import { SET_SOCKET, SET_TOKEN } from './modules/session'
-import { sendMessage } from './modules/chat'
+import { sendMessage, SEND_MESSAGE } from './modules/chat'
 
 export default (store) => (next) => (action) => {
     const { dispatch, getState } = store

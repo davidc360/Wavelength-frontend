@@ -52,8 +52,8 @@ function Room() {
 
         socket.on('connect', () => {
             console.log('connection open')
-            socket.emit('subscribe', { room: userInfo.token })
     
+            console.log('sending', token)
             socket.emit('join_room', {
                 photo_url: userInfo.photo_url,
                 username: userInfo.username,
@@ -68,6 +68,10 @@ function Room() {
                 message: 'joined',
                 photo_url: e.photo_url
             }))
+        })
+
+        socket.on('chat_message', message => {
+            dispatch(sendMessage(message)) 
         })
 
         dispatch(setSocket(socket))

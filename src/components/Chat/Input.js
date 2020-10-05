@@ -5,15 +5,20 @@ import { sendMessage } from '../../ducks/modules/chat'
 
 export default function () {
     const dispatch = useDispatch()
-    const {name, picture} = useSelector(state => state.chat.userInfo)
+    const { username, photo_url } = useSelector(state => state.chat.userInfo)
+    const { token, socket } = useSelector(state => state.session)
 
     function handleKeyDown(e) {
         if (e.key === 'Enter') {
-            dispatch(sendMessage({
-                name: name,
-                picture: picture,
-                message: e.target.value
-            }))
+            const message = {
+                username: username,
+                photo_url: photo_url,
+                message: e.target.value,
+                room: token
+            }
+            dispatch(sendMessage(message))
+            socket.emit('chat_message', message)
+
             e.target.value = ''
         }
             
