@@ -6,7 +6,7 @@ import getYouTubeID from 'get-youtube-id'
 import styles from "./YouTubePlayer.module.sass"
 
 export default function () {
-    const { token, socket, playState, timestamp } = useSelector(state => state.session)
+    const { token, socket, playState, timestamp, timestampLastChanged } = useSelector(state => state.session)
     const videoLink = useSelector(state => state.session.link)
     const player = useRef()
 
@@ -29,11 +29,13 @@ export default function () {
 
     function setPlay(e) {
         if (!firstRun.current) {
-            socket.emit('play_video', {
-                room: token,
-                timestamp: player.current.getCurrentTime(),
-                actionTime: Date.now()
-            })
+            console.log(Date.now() - timestampLastChanged > 500)
+            if (Date.now() - timestampLastChanged > 1000) {
+                socket.emit('play_video', {
+                    room: token,
+                    timestamp: player.current.getCurrentTime(),
+                })
+            }
         } else {
             firstRun.current = false
         }

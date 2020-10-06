@@ -51,7 +51,8 @@ function Room() {
     const { token, timestampLastChanged } = useSelector(state => state.session)
 
     const tokenFromURL = useLocation().pathname.slice(1)
-    const alreadySynced = useRef(false)
+    const alreadySyncedChat = useRef(false)
+    const alreadySyncedTimestamp = useRef(false)
 
     useEffect(() => {
         const socket = socketIOClient.connect(ENDPOINT)
@@ -69,9 +70,9 @@ function Room() {
         })
 
         socket.on('sync_chat', e => {
-            if (alreadySynced.current) return
+            if (alreadySyncedChat.current) return
             dispatch(syncChat(e.messages))
-            alreadySynced.current = true
+            alreadySyncedChat.current = true
         })
         
         socket.on('connection_message', e => {
@@ -102,17 +103,30 @@ function Room() {
                 timestampLastChanged: Date.now(),
                 timestamp: e.timestamp
             }
-            const delta = Date.now() - timestampLastChanged
+            const delta = Date.now() - e.actionStamp
             console.log(delta)
             // if ((delta) > 500)
             // payload.timestamp = e.timestamp
             dispatch(setTimestamp(payload))
             dispatch(playVideo())
         })
+        
+        socket.on('update_timestamp', e => {
+            if(alreadySyncedTimestamp.current) return
+            let payload = {
+                timestampLastChanged: Date.now(),
+                timestamp: e.timestamp
+            }
+            dispatch(setTimestamp(payload))
+            dispatch(playVideo())
+            alreadySyncedTimestamp.current = true
+        })
 
         dispatch(setSocket(socket))
         dispatch(setToken(tokenFromURL))
     }, [])
+
+   
 
     return (
         <div className='App'>
