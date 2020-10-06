@@ -12,6 +12,8 @@ export default function () {
 
     const id = getYouTubeID(videoLink)
 
+    const firstRun = useRef(true)
+
     const opts = {
         width: '100%',
         playerVars: {
@@ -22,25 +24,26 @@ export default function () {
     
     function setPlayer(event) {
         player.current = event.target
-        player.current.seekTo(10.1)
+        // player.current.seekTo(10.1)
     }
 
     function setPlay(e) {
-        console.log('played')
-        if(!playState)
-        socket.emit('play_video', {
-            room: token,
-            timestamp: player.current.getCurrentTime(),
-            actionTime: Date.now()
-        })
+        if (!firstRun.current) {
+            socket.emit('play_video', {
+                room: token,
+                timestamp: player.current.getCurrentTime(),
+                actionTime: Date.now()
+            })
+        } else {
+            firstRun.current = false
+        }
     }
     
     function setPause(e) {
-        console.log('paused')
-        if(playState)
         socket.emit('pause_video', {
             room: token
         })
+        console.log('paused vid')   
     }
 
     useEffect(() => {
