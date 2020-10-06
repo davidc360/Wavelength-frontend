@@ -21,7 +21,8 @@ import {
     setLink,
     playVideo,
     pauseVideo,
-    setTimestamp
+    setTimestamp,
+    sendTimestamp
 } from './ducks/modules/session'
 import { sendMessage, syncChat } from './ducks/modules/chat'
 
@@ -111,22 +112,25 @@ function Room() {
             dispatch(playVideo())
         })
         
-        socket.on('update_timestamp', e => {
+        socket.on('request_timestamp', e => {
+            dispatch(sendTimestamp())
+        })
+        
+        socket.on('sync_timestamp', e => {
             if(alreadySyncedTimestamp.current) return
+            console.log('supposed to sync timestamp', e)
             let payload = {
                 timestampLastChanged: Date.now(),
                 timestamp: e.timestamp
             }
             dispatch(setTimestamp(payload))
-            dispatch(playVideo())
+            // dispatch(playVideo())
             alreadySyncedTimestamp.current = true
         })
 
         dispatch(setSocket(socket))
         dispatch(setToken(tokenFromURL))
     }, [])
-
-   
 
     return (
         <div className='App'>
