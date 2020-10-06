@@ -15,12 +15,14 @@ import Chat from './components/Chat/Chat'
 import SockJs from 'sockjs-client'
 import socketIOClient from "socket.io-client"
 
-import { setToken, setSocket, setLink } from './ducks/modules/session'
+import { setToken, setSocket, setLink, playVideo, pauseVideo } from './ducks/modules/session'
 import { sendMessage } from './ducks/modules/chat'
 
 
 // const ENDPOINT = 'http://50.116.0.53/'
-const ENDPOINT = 'http://127.0.0.1:2000/'
+// const ENDPOINT = 'http://127.0.0.1:5000/'
+const ENDPOINT = 'http://127.0.0.1:8000/'
+// const ENDPOINT = 'https://maketube.herokuapp.com/'
 
 function App() {
     
@@ -73,6 +75,16 @@ function Room() {
 
         socket.on('update_link', e => {
             dispatch(setLink(e.link))
+        })
+
+        socket.on('pause_video', e => {
+            console.log('received pause command')
+            dispatch(pauseVideo())
+        })
+        
+        socket.on('play_video', e => {
+            console.log('received play command')
+            dispatch(playVideo())
         })
 
         dispatch(setSocket(socket))

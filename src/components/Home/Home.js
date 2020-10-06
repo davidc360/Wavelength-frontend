@@ -3,7 +3,8 @@ import styles from "./Home.module.sass"
 
 import axios from 'axios'
 
-const CREATE_ENDPOINT = 'http://50.116.0.53/create'
+// const CREATE_ENDPOINT = 'http://50.116.0.53/create'
+const CREATE_ENDPOINT = 'http://127.0.0.1:2000/'
 
 export default function () {
     const codeRef = useRef()

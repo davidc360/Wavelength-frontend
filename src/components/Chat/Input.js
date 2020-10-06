@@ -16,7 +16,7 @@ export default function () {
                 message: e.target.value,
                 room: token
             }
-            dispatch(sendMessage(message))
+            // dispatch(sendMessage(message))
             socket.emit('chat_message', message)
 
             e.target.value = ''
