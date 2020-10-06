@@ -6,7 +6,7 @@ import getYouTubeID from 'get-youtube-id'
 import styles from "./YouTubePlayer.module.sass"
 
 export default function () {
-    const { token, socket, playState } = useSelector(state => state.session)
+    const { token, socket, playState, timestamp } = useSelector(state => state.session)
     const videoLink = useSelector(state => state.session.link)
     const player = useRef()
 
@@ -29,7 +29,9 @@ export default function () {
         console.log('played')
         if(!playState)
         socket.emit('play_video', {
-            room: token
+            room: token,
+            timestamp: player.current.getCurrentTime(),
+            actionTime: Date.now()
         })
     }
     
@@ -45,10 +47,15 @@ export default function () {
         console.log('play state changed')
         if (!player.current) return
         if (playState)
-            player.current.playVideo()
+        player.current.playVideo()
         else
-            player.current.pauseVideo()
+        player.current.pauseVideo()
     }, [playState])
+    
+    useEffect(() => {
+        if (!player.current) return
+        player.current.seekTo(timestamp)
+    }, [timestamp])
 
     return(
         <YouTube

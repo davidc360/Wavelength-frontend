@@ -4,6 +4,7 @@ export const SEND_MESSAGE = 'SEND_MESSAGE'
 export const SET_NAME = 'SET_NAME'
 export const SET_PHOTO_URL = 'SET_PHOTO_URL'
 export const SET_SHOW_MODAL = 'SET_SHOW_MODAL' 
+export const SYNC_CHAT = 'SYNC_CHAT'
 
 const localUsername = localStorage.getItem('username') ?? 'Anonymous'
 const localPhotoURL = localStorage.getItem('photo_url') ?? 'https://i.imgur.com/mCHMpLT.png'
@@ -43,6 +44,10 @@ const reducer = produce((draft, action = {}) => {
                 message: action.message,
             })
             return
+
+        case SYNC_CHAT:
+            draft.messages = [...action.messages, ...draft.messages]
+            return
     }
 }, initialState)
 
@@ -66,6 +71,11 @@ export const sendMessage = ({ message, username, photo_url }) => ({
     message: message,
     username: username,
     photo_url: photo_url
+})
+
+export const syncChat = messages => ({
+    type: SYNC_CHAT,
+    messages: messages
 })
 
 export default reducer

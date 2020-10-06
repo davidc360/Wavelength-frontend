@@ -5,9 +5,11 @@ export const SET_TOKEN = 'SET_TOKEN'
 export const SET_SOCKET = 'SET_SOCKET'
 export const PLAY_VIDEO = 'PLAY_VIDEO'
 export const PAUSE_VIDEO = 'PAUSE_VIDEO'
+export const SET_TIMESTAMP = 'SET_TIMESTAMP'
 
 const initialState = {
     // token: '1232D',
+    timestampLastChanged: Date.now(),
     link: 'https://www.youtube.com/watch?v=2gQhd0_X5eE'
 }
 
@@ -33,6 +35,11 @@ const reducer = produce((draft, action = {}) => {
         case PAUSE_VIDEO:
             draft.playState = 0
             return
+        
+        case SET_TIMESTAMP:
+            draft.timestampLastChanged = action.timestampLastChanged
+            if (action.timestamp) draft.timestamp = action.timestamp
+            return
     }
 }, initialState)
 
@@ -57,6 +64,12 @@ export const playVideo = () => ({
 
 export const pauseVideo = () => ({
     type: PAUSE_VIDEO,
+ })
+
+ export const setTimestamp = ({ timestampLastChanged, timestamp }) => ({
+     type: SET_TIMESTAMP,
+     timestamp: timestamp,
+     timestampLastChanged: timestampLastChanged
  })
 
 export default reducer

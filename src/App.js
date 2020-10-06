@@ -15,8 +15,15 @@ import Chat from './components/Chat/Chat'
 import SockJs from 'sockjs-client'
 import socketIOClient from "socket.io-client"
 
-import { setToken, setSocket, setLink, playVideo, pauseVideo } from './ducks/modules/session'
-import { sendMessage } from './ducks/modules/chat'
+import {
+    setToken,
+    setSocket,
+    setLink,
+    playVideo,
+    pauseVideo,
+    setTimestamp
+} from './ducks/modules/session'
+import { sendMessage, syncChat } from './ducks/modules/chat'
 
 
 // const ENDPOINT = 'http://50.116.0.53/'
@@ -41,9 +48,10 @@ function App() {
 function Room() {
     const dispatch = useDispatch()
     const userInfo = useSelector(state => state.chat.userInfo)
-    const { token } = useSelector(state => state.session)
+    const { token, timestampLastChanged } = useSelector(state => state.session)
 
     const tokenFromURL = useLocation().pathname.slice(1)
+    const alreadySynced = useRef(false)
 
     useEffect(() => {
         const socket = socketIOClient.connect(ENDPOINT)
@@ -59,6 +67,12 @@ function Room() {
                 room: tokenToSend
             })
         })
+
+        socket.on('sync_chat', e => {
+            if (alreadySynced.current) return
+            dispatch(syncChat(e.messages))
+            alreadySynced.current = true
+        })
         
         socket.on('connection_message', e => {
             console.log(e)
@@ -70,7 +84,7 @@ function Room() {
         })
 
         socket.on('chat_message', message => {
-            dispatch(sendMessage(message)) 
+            dispatch(sendMessage(message))
         })
 
         socket.on('update_link', e => {
@@ -83,7 +97,16 @@ function Room() {
         })
         
         socket.on('play_video', e => {
-            console.log('received play command')
+            console.log('received play command', e)
+            let payload = {
+                timestampLastChanged: Date.now(),
+                timestamp: e.timestamp
+            }
+            const delta = Date.now() - timestampLastChanged
+            console.log(delta)
+            // if ((delta) > 500)
+            // payload.timestamp = e.timestamp
+            dispatch(setTimestamp(payload))
             dispatch(playVideo())
         })
 
