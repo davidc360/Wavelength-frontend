@@ -23,7 +23,7 @@ export default function () {
         //     console.log(resp.data);
         //     window.open("/" + token, "_self") 
         // })
-        return shortid.generate()
+        window.open("/" + shortid.generate(), "_self") 
     }
     
     return(
