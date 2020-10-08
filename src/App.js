@@ -27,8 +27,8 @@ import {
 import { sendMessage, syncChat } from './ducks/modules/chat'
 
 
-const ENDPOINT = 'http://159.89.2.108/'
-// const ENDPOINT = 'http://127.0.0.1:8000/'
+// const ENDPOINT = 'http://159.89.2.108/'
+const ENDPOINT = 'http://127.0.0.1:8000/'
 // const ENDPOINT = 'http://50.116.0.53/'
 // const ENDPOINT = 'http://127.0.0.1:5000/'
 // const ENDPOINT = 'https://maketube.herokuapp.com/'
