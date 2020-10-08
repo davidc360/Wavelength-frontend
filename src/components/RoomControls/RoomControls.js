@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setLink } from '../../ducks/modules/session'
+import { setVideoLink } from '../../ducks/modules/session'
 
 export default function () {
     const dispatch = useDispatch()
@@ -8,7 +8,7 @@ export default function () {
 
     function updateLink(e) {
         const newLink = e.target.value
-        dispatch(setLink(newLink))
+        dispatch(setVideoLink(newLink))
         socket.emit('update_link', {
             room: token,
             link: newLink

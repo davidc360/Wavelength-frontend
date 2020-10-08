@@ -18,19 +18,19 @@ import socketIOClient from "socket.io-client"
 import {
     setToken,
     setSocket,
-    setLink,
     playVideo,
     pauseVideo,
     setTimestamp,
-    sendTimestamp
+    sendTimestamp,
+    setVideoLink
 } from './ducks/modules/session'
 import { sendMessage, syncChat } from './ducks/modules/chat'
 
 
-const ENDPOINT = 'http://159.89.2.108/'
+// const ENDPOINT = 'http://159.89.2.108/'
+const ENDPOINT = 'http://127.0.0.1:8000/'
 // const ENDPOINT = 'http://50.116.0.53/'
 // const ENDPOINT = 'http://127.0.0.1:5000/'
-// const ENDPOINT = 'http://127.0.0.1:8000/'
 // const ENDPOINT = 'https://maketube.herokuapp.com/'
 
 function App() {
@@ -91,7 +91,7 @@ function Room() {
         })
 
         socket.on('update_link', e => {
-            dispatch(setLink(e.link))
+            dispatch(setVideoLink(e.link))
         })
 
         socket.on('pause_video', e => {
@@ -127,6 +127,10 @@ function Room() {
             dispatch(setTimestamp(payload))
             // dispatch(playVideo())
             alreadySyncedTimestamp.current = true
+        })
+
+        socket.on('set_video_link', e => {
+            dispatch(setVideoLink(e.video_link ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'))
         })
 
         dispatch(setSocket(socket))

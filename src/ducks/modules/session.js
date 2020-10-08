@@ -1,26 +1,22 @@
 import produce from 'immer'
 
-export const SET_LINK = 'SET_LINK'
 export const SET_TOKEN = 'SET_TOKEN'
 export const SET_SOCKET = 'SET_SOCKET'
 export const PLAY_VIDEO = 'PLAY_VIDEO'
 export const PAUSE_VIDEO = 'PAUSE_VIDEO'
 export const SET_TIMESTAMP = 'SET_TIMESTAMP'
 export const SEND_TIMESTAMP = 'SEND_TIMESTAMP'
+export const SET_VIDEO_LINK = 'SET_VIDEO_LINK'
 
 const initialState = {
     // token: '1232D',
     timestampLastChanged: Date.now(),
     sendTimestamp: false,
-    link: 'https://www.youtube.com/watch?v=2gQhd0_X5eE'
+    // link: 'https://www.youtube.com/watch?v=2gQhd0_X5eE'
 }
 
 const reducer = produce((draft, action = {}) => {
     switch (action.type) {
-        case SET_LINK:
-            draft.link = action.link
-            return
-        
         case SET_TOKEN:
             draft.token = action.token
             
@@ -46,13 +42,12 @@ const reducer = produce((draft, action = {}) => {
         case SEND_TIMESTAMP:
             draft.sendTimestamp = !draft.sendTimestamp
             return
+
+        case SET_VIDEO_LINK:
+            draft.link = action.link
+            return
     }
 }, initialState)
-
-export const setLink = link => ({
-    type: SET_LINK,
-    link: link
-})
 
 export const setToken = token => ({
     type: SET_TOKEN,
@@ -80,6 +75,11 @@ export const setTimestamp = ({ timestampLastChanged, timestamp }) => ({
 
 export const sendTimestamp = () => ({
     type: SEND_TIMESTAMP
+})
+
+export const setVideoLink = link => ({
+    type: SET_VIDEO_LINK,
+    link: link
 })
 
 export default reducer
