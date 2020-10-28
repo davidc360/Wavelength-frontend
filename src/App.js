@@ -121,7 +121,8 @@ function Room() {
         })
         
         socket.on('request_timestamp', e => {
-            dispatch({ type: 'SEND_TIMESTAMP' })
+            if(alreadySyncedTimestamp.current)
+                dispatch({ type: 'SEND_TIMESTAMP' })
         })
         
         socket.on('sync_timestamp', e => {
