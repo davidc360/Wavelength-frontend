@@ -21,7 +21,6 @@ import {
     playVideo,
     pauseVideo,
     setTimestamp,
-    sendTimestamp,
     setVideoLink,
 } from './ducks/modules/session'
 import { sendMessage, syncChat } from './ducks/modules/chat'
@@ -50,7 +49,7 @@ function App() {
 function Room() {
     const dispatch = useDispatch()
     const userInfo = useSelector(state => state.chat.userInfo)
-    const { token, timestampLastChanged } = useSelector(state => state.session)
+    const { player, token, timestampLastChanged } = useSelector(state => state.session)
 
     const tokenFromURL = useLocation().pathname.slice(1)
     const alreadySyncedChat = useRef(false)
@@ -92,12 +91,14 @@ function Room() {
         })
 
         const setLink = e => {
-            console.log('should update link')
             dispatch(setVideoLink(e.link))
         }
         socket.on('update_link', setLink)
-        socket.on('sync_video_link', () => {
-            if (!alreadySyncedURL) setLink()
+        socket.on('sync_video_link', e => {
+            if (!alreadySyncedURL.current) {
+                setLink(e)
+                alreadySyncedURL.current = true
+            }
         })
 
         socket.on('pause_video', e => {
@@ -120,7 +121,7 @@ function Room() {
         })
         
         socket.on('request_timestamp', e => {
-            dispatch(sendTimestamp())
+            dispatch({ type: 'SEND_TIMESTAMP' })
         })
         
         socket.on('sync_timestamp', e => {
@@ -137,12 +138,6 @@ function Room() {
 
         dispatch(setSocket(socket))
         dispatch(setToken(tokenFromURL))
-        if (!alreadySyncedURL.current) {
-            socket.emit('sync_video_link', {
-                room: tokenFromURL
-            })
-            alreadySyncedURL.current = true
-        }
     }, [])
 
     return (

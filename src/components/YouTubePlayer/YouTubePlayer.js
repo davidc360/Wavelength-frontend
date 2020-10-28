@@ -4,8 +4,10 @@ import YouTube from 'react-youtube'
 import getYouTubeID from 'get-youtube-id'
 
 import styles from "./YouTubePlayer.module.sass"
+import { setPlayer as reduxSetPlayer } from '../../ducks/modules/session'
 
 export default function () {
+    const dispatch = useDispatch()
     const { token, socket, playState, timestamp, timestampLastChanged, sendTimestamp } = useSelector(state => state.session)
     const videoLink = useSelector(state => state.session.link)
     const player = useRef()
@@ -25,6 +27,7 @@ export default function () {
     function setPlayer(event) {
         player.current = event.target
         player.current.seekTo(timestamp)
+        dispatch(reduxSetPlayer(player.current))
     }
 
     function setPlay(e) {
@@ -38,6 +41,7 @@ export default function () {
             }
         } else {
             firstRun.current = false
+            socket.emit('request_timestamp', {})
         }
     }
     
@@ -45,7 +49,7 @@ export default function () {
         socket.emit('pause_video', {
             room: token
         })
-        console.log('paused vid')   
+        console.log('paused vid', token)   
     }
 
     useEffect(() => {

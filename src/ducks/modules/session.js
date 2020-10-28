@@ -1,5 +1,6 @@
 import produce from 'immer'
 
+export const SET_PLAYER = 'SET_PLAYER'
 export const SET_TOKEN = 'SET_TOKEN'
 export const SET_SOCKET = 'SET_SOCKET'
 export const PLAY_VIDEO = 'PLAY_VIDEO'
@@ -17,9 +18,12 @@ const initialState = {
 
 const reducer = produce((draft, action = {}) => {
     switch (action.type) {
+        case SET_PLAYER:
+            draft.player = action.player
+            return
+
         case SET_TOKEN:
             draft.token = action.token
-            
             return
         
         case SET_SOCKET:
@@ -38,16 +42,21 @@ const reducer = produce((draft, action = {}) => {
             draft.timestampLastChanged = action.timestampLastChanged
             if (action.timestamp) draft.timestamp = action.timestamp
             return
-        
+
         case SEND_TIMESTAMP:
             draft.sendTimestamp = !draft.sendTimestamp
             return
-
+            
         case SET_VIDEO_LINK:
             draft.link = action.link
             return
     }
 }, initialState)
+
+export const setPlayer = player => ({
+    type: SET_PLAYER,
+    player: player
+})
 
 export const setToken = token => ({
     type: SET_TOKEN,
@@ -71,10 +80,6 @@ export const setTimestamp = ({ timestampLastChanged, timestamp }) => ({
     type: SET_TIMESTAMP,
     timestamp: timestamp,
     timestampLastChanged: timestampLastChanged
-})
-
-export const sendTimestamp = () => ({
-    type: SEND_TIMESTAMP
 })
 
 export const setVideoLink = link => ({
