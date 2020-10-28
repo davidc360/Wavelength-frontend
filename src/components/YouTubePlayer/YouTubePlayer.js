@@ -63,6 +63,7 @@ export default function () {
     
     useEffect(() => {
         if (!player.current) return
+        console.log('changing timestamp')
         player.current.seekTo(timestamp)
     }, [timestamp])
     
