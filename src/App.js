@@ -22,13 +22,13 @@ import {
     pauseVideo,
     setTimestamp,
     sendTimestamp,
-    setVideoLink
+    setVideoLink,
 } from './ducks/modules/session'
 import { sendMessage, syncChat } from './ducks/modules/chat'
 
 
-const ENDPOINT = 'http://159.89.2.108/'
-// const ENDPOINT = 'http://127.0.0.1:8000/'
+// const ENDPOINT = 'http://159.89.2.108/'
+const ENDPOINT = 'http://127.0.0.1:8000/'
 // const ENDPOINT = 'http://50.116.0.53/'
 // const ENDPOINT = 'http://127.0.0.1:5000/'
 // const ENDPOINT = 'https://maketube.herokuapp.com/'
@@ -55,6 +55,7 @@ function Room() {
     const tokenFromURL = useLocation().pathname.slice(1)
     const alreadySyncedChat = useRef(false)
     const alreadySyncedTimestamp = useRef(false)
+    const alreadySyncedURL = useRef(false)
 
     useEffect(() => {
         const socket = socketIOClient.connect(ENDPOINT)
@@ -63,12 +64,12 @@ function Room() {
         socket.on('connect', () => {
             console.log('connection open')
     
-            console.log('sending', tokenToSend)
             socket.emit('join_room', {
                 photo_url: userInfo.photo_url,
                 username: userInfo.username,
                 room: tokenToSend
             })
+
         })
 
         socket.on('sync_chat', e => {
@@ -90,8 +91,13 @@ function Room() {
             dispatch(sendMessage(message))
         })
 
-        socket.on('update_link', e => {
+        const setLink = e => {
+            console.log('should update link')
             dispatch(setVideoLink(e.link))
+        }
+        socket.on('update_link', setLink)
+        socket.on('sync_video_link', () => {
+            if (!alreadySyncedURL) setLink()
         })
 
         socket.on('pause_video', e => {
@@ -129,12 +135,14 @@ function Room() {
             alreadySyncedTimestamp.current = true
         })
 
-        socket.on('set_video_link', e => {
-            dispatch(setVideoLink(e.video_link ?? 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'))
-        })
-
         dispatch(setSocket(socket))
         dispatch(setToken(tokenFromURL))
+        if (!alreadySyncedURL.current) {
+            socket.emit('sync_video_link', {
+                room: tokenFromURL
+            })
+            alreadySyncedURL.current = true
+        }
     }, [])
 
     return (
